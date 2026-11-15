@@ -1,0 +1,37 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+<h2>Рассылка #{{ object.pk }}</h2>
+<p><strong>Сообщение:</strong> {{ object.message.subject }}</p>
+<p><strong>Статус:</strong> {{ object.status }}</p>
+<p><strong>Начало:</strong> {{ object.start_time }}</p>
+<p><strong>Окончание:</strong> {{ object.end_time }}</p>
+
+<form method="post" action="{% url 'mailing:mailing_send' object.pk %}" class="mb-4">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-success">Запустить рассылку сейчас</button>
+    <a href="{% url 'mailing:mailing_update' object.pk %}" class="btn btn-warning">Редактировать</a>
+    <a href="{% url 'mailing:mailing_delete' object.pk %}" class="btn btn-danger">Удалить</a>
+</form>
+
+<h4>История попыток отправки</h4>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Дата и время</th>
+            <th>Статус</th>
+            <th>Ответ сервера</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for attempt in object.attempts.all %}
+        <tr>
+            <td>{{ attempt.attempt_time }}</td>
+            <td>{{ attempt.status }}</td>
+            <td>{{ attempt.server_response }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="3">Попыток отправки ещё не было.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
