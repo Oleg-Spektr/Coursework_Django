@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -6,6 +7,14 @@ class Recipient(models.Model):
     email = models.EmailField(unique=True, verbose_name='Email')
     full_name = models.CharField(max_length=255, verbose_name='Ф. И. О.')
     comment = models.TextField(blank=True, null=True, verbose_name='Комментарий')
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='recipients',
+        verbose_name='Владелец',
+    )
 
     def __str__(self):
         return f'{self.full_name} ({self.email})'
@@ -18,6 +27,14 @@ class Recipient(models.Model):
 class Message(models.Model):
     subject = models.CharField(max_length=255, verbose_name='Тема письма')
     body = models.TextField(verbose_name='Тело письма')
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='messages',
+        verbose_name='Владелец',
+    )
 
     def __str__(self):
         return self.subject
@@ -57,9 +74,16 @@ class Mailing(models.Model):
         related_name='mailings',
         verbose_name='Получатели',
     )
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='mailings',
+        verbose_name='Владелец',
+    )
 
     def update_status(self):
-        """Динамический пересчёт и сохранение статуса рассылки."""
         now = timezone.now()
         if now < self.start_time:
             new_status = self.STATUS_CREATED
@@ -78,6 +102,9 @@ class Mailing(models.Model):
     class Meta:
         verbose_name = 'Рассылка'
         verbose_name_plural = 'Рассылки'
+        permissions = [
+            ('can_disable_mailing', 'Может отключать рассылки'),
+        ]
 
 
 class MailingAttempt(models.Model):

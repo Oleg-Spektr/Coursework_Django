@@ -1,24 +1,36 @@
 {% extends 'mailing/base.html' %}
 {% block content %}
 <h2>Статистика сервиса</h2>
-<div class="row mt-4">
-    <div class="col-md-4">
-        <div class="card p-3">
-            <h5>Всего рассылок</h5>
-            <p class="display-6">{{ total_mailings }}</p>
-        </div>
+<div class="row">
+    <div class="card">
+        <h5>Всего рассылок</h5>
+        <p class="display-6">{{ total_mailings }}</p>
     </div>
-    <div class="col-md-4">
-        <div class="card p-3">
-            <h5>Активных рассылок</h5>
-            <p class="display-6">{{ active_mailings }}</p>
-        </div>
+    <div class="card">
+        <h5>Активных рассылок</h5>
+        <p class="display-6">{{ active_mailings }}</p>
     </div>
-    <div class="col-md-4">
-        <div class="card p-3">
-            <h5>Уникальных получателей</h5>
-            <p class="display-6">{{ unique_recipients }}</p>
-        </div>
+    <div class="card">
+        <h5>Уникальных получателей</h5>
+        <p class="display-6">{{ unique_recipients }}</p>
     </div>
 </div>
+
+{% if user.is_authenticated %}
+<h2 style="margin-top: 32px;">Ваша личная статистика</h2>
+<div class="row">
+    <div class="card">
+        <h5>Успешных попыток</h5>
+        <p class="display-6">{{ user_success_attempts }}</p>
+    </div>
+    <div class="card">
+        <h5>Неуспешных попыток</h5>
+        <p class="display-6">{{ user_failed_attempts }}</p>
+    </div>
+    <div class="card">
+        <h5>Отправлено сообщений</h5>
+        <p class="display-6">{{ user_sent_messages }}</p>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
