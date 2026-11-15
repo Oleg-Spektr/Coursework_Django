@@ -1,0 +1,33 @@
+{% extends 'mailing/base.html' %}
+{% block content %}
+<h2>Пользователи сервиса</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Имя</th>
+            <th>Статус</th>
+            <th>Действие</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for u in object_list %}
+        <tr>
+            <td>{{ u.email }}</td>
+            <td>{{ u.first_name }} {{ u.last_name }}</td>
+            <td>{% if u.is_active %}Активен{% else %}Заблокирован{% endif %}</td>
+            <td>
+                {% if not u.is_superuser %}
+                <form method="post" action="{% url 'users:toggle_active' u.pk %}" style="background:none;border:none;padding:0;box-shadow:none;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm {% if u.is_active %}btn-danger{% else %}btn-success{% endif %}">
+                        {% if u.is_active %}Заблокировать{% else %}Разблокировать{% endif %}
+                    </button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
